@@ -1,0 +1,90 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 32
+
+    defaultConfig {
+        applicationId "de.badaix.snapcast"
+        minSdkVersion 16
+        targetSdkVersion 32
+        versionCode 2600
+        versionName '0.26.0.0'
+        multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++14"
+                arguments '-DANDROID_STL=c++_static', '-DBUILD_SERVER=ON', '-DBUILD_TESTS=OFF'
+                abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
+            }
+        }
+    }
+    buildFeatures {
+        prefab true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            //path 'src/main/cpp/snapcast/CMakeLists.txt'
+        }
+    }
+
+    buildToolsVersion = '32.0.0'
+    ndkVersion '24.0.8215888'
+    lint {
+        disable 'MissingTranslation'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(dir: "$buildDir/native-libs", include: 'native-libs.jar')
+    testImplementation 'junit:junit:4.13.2'
+    // https://dl.google.com/dl/android/maven2/index.html
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'androidx.cardview:cardview:1.0.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    // compile 'com.android.support:recyclerview-v7:23.1.1'
+    implementation 'com.google.android.material:material:1.5.0'
+    implementation files('libs/boost_1_78_0.rar')
+    implementation files('libs/flac-1.3.3.aar')
+    implementation files('libs/oboe-1.6.1.aar')
+    implementation files('libs/ogg-1.3.5.aar')
+    implementation files('libs/opus-1.1.2.aar')
+    implementation files('libs/soxr-0.1.3.aar')
+    implementation files('libs/tremor-1.0.0.aar')
+    implementation files('libs/vorbis-1.3.7.aar')
+
+    implementation 'com.squareup.okhttp3:okhttp:3.11.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+
+//    implementation 'com.github.badaix:boost:1.78@aar'
+//    implementation 'com.github.badaix:flac:1.3.3'
+//    implementation 'com.github.badaix:ogg:1.3.5'
+//    implementation 'com.github.badaix:opus:1.1.2'
+//    implementation 'com.github.badaix:soxr:0.1.3'
+//    implementation 'com.github.badaix:tremor:1.0.0'
+//    implementation 'com.github.badaix:vorbis:1.3.7'
+}
+
+
+repositories{
+    flatDir{
+        dirs 'libs'
+    }
+
+//    maven {
+//        name = "GithubPackages"
+//        url = uri("https://maven.pkg.github.com/badaix/snapcast-deps")
+//        credentials {
+//            username =  project.findProperty("GITHUB_USER") ?: System.getenv("GITHUB_USER")
+//            password = project.findProperty("GITHUB_TOKEN") ?: System.getenv("GITHUB_TOKEN")
+//        }
+//    }
+}

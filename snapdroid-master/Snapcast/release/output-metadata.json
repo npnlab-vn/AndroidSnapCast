@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "de.badaix.snapcast.test",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 2600,
+      "versionName": "0.26.0.0",
+      "outputFile": "Snapcast-release.apk"
+    }
+  ],
+  "elementType": "File"
+}
