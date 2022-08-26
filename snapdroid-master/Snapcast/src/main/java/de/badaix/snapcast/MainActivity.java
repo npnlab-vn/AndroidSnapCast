@@ -18,6 +18,7 @@
 
 package de.badaix.snapcast;
 
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -29,6 +30,7 @@ import android.net.nsd.NsdServiceInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -55,6 +57,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import de.badaix.snapcast.control.RemoteControl;
 import de.badaix.snapcast.control.json.Client;
@@ -98,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
     private Button btnPlay = null;
     private Button btnPause = null;
     private Button btnNext = null, btnPrevious = null;
+    private Button btnVoice = null;
     private boolean batchActive = false;
     private MQTTHelper mqttHelper;
 
@@ -178,7 +182,31 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
 
     }
 
+    private void sendVoiceCommand(String cmd){
+        String jsonTemplate = "{\n" +
+                "\t\"scope\": \"device\", \n" +
+                "    \t\"name\": \"app.ts.service.voice.command\",\n" +
+                "\t\"data\": {\n" +
+                "\t\t\"command\": \"VOICEXXXX\"\n" +
+                "\t}\n" +
+                "}\n";
+        jsonTemplate = jsonTemplate.replace("VOICEXXXX", cmd);
+        MqttMessage msg = new MqttMessage();
+        msg.setId(1234);
+        msg.setQos(0);
+        msg.setRetained(false);
+        Log.d(TAG, jsonTemplate);
 
+        byte[] b = jsonTemplate.getBytes(Charset.forName("UTF-8"));
+        msg.setPayload(b);
+
+        try {
+            mqttHelper.mqttAndroidClient.publish("/novaland/smartspeakerdemo/smartspeaker_demo_1", msg);
+
+        }catch (MqttException e){
+
+        }
+    }
     private void sendCMD(String cmd){
         String jsonTemplate = "{\n" +
                 "\t\"scope\": \"device\", \n" +
@@ -202,6 +230,23 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
 
         }
     }
+    private static final int REQ_CODE_SPEECH_INPUT = 100;
+    private void startVoiceInput() {
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+        //intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,"vi-VN");
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Nói \"MỞ ĐÈN\" hoặc \"MỞ CỬA SỔ\"" );
+
+
+        try {
+            startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
+        } catch (ActivityNotFoundException a) {
+
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -265,6 +310,14 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
             @Override
             public void onClick(View view) {
                 sendCMD("previous");
+            }
+        });
+
+        btnVoice = findViewById(R.id.btnVoice);
+        btnVoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startVoiceInput();
             }
         });
 
@@ -508,6 +561,20 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+
+        switch (requestCode) {
+            case REQ_CODE_SPEECH_INPUT: {
+                if (resultCode == RESULT_OK && null != data) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    if (result.size() > 0) {
+                        String cmd_voice = result.get(0).toLowerCase();
+                        Log.d(TAG, "Input voice: " + cmd_voice);
+                        sendVoiceCommand(cmd_voice);
+                    }
+                }
+            }
+        }
 
         if (resultCode == RESULT_CANCELED) {
             return;
