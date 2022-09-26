@@ -44,6 +44,8 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -56,10 +58,17 @@
             android:layout_weight="0.3"
             android:layout_marginTop="?attr/actionBarSize"
             tools:layout="@layout/fragment_group_list" />
+        <androidx.leanback.widget.VerticalGridView
+            android:id="@+id/gridViewVideos"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.3">
+
+        </androidx.leanback.widget.VerticalGridView>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.6"
+            android:layout_weight="0.3"
             android:orientation="horizontal"
             android:gravity="bottom">
             <Button

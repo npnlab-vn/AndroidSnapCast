@@ -3,7 +3,11 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/NOVAINTECHS/SnapCastAndroid/snapdroid-master/Snapcast/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
+        <entry key="..\:/NOVAINTECHS/SnapCastAndroid/snapdroid-master/Snapcast/src/main/res/drawable-hdpi/selector_subitem_color.xml" value="0.124" />
+        <entry key="..\:/NOVAINTECHS/SnapCastAndroid/snapdroid-master/Snapcast/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/NOVAINTECHS/SnapCastAndroid/snapdroid-master/Snapcast/src/main/res/layout/layout_media_item.xml" value="0.1" />
+        <entry key="..\:/NOVAINTECHS/SnapCastAndroid/snapdroid-master/Snapcast/src/main/res/layout/selector_item_color.xml" value="0.1" />
+        <entry key="..\:/NOVAINTECHS/SnapCastAndroid/snapdroid-master/Snapcast/src/main/res/layout/selector_subitem_color.xml" value="0.1" />
         <entry key="..\:/NOVAINTECHS/snapdroid-master/Snapcast/src/main/res/layout/activity_about.xml" value="0.25416666666666665" />
         <entry key="..\:/NOVAINTECHS/snapdroid-master/Snapcast/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
         <entry key="..\:/NOVAINTECHS/snapdroid-master/Snapcast/src/main/res/layout/client_item.xml" value="0.25416666666666665" />

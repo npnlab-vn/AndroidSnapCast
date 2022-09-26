@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~     This file is part of snapcast
+  ~     Copyright (C) 2014-2021  Johannes Pohl
+  ~
+  ~     This program is free software: you can redistribute it and/or modify
+  ~     it under the terms of the GNU General Public License as published by
+  ~     the Free Software Foundation, either version 3 of the License, or
+  ~     (at your option) any later version.
+  ~
+  ~     This program is distributed in the hope that it will be useful,
+  ~     but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~     GNU General Public License for more details.
+  ~
+  ~     You should have received a copy of the GNU General Public License
+  ~     along with this program.  If not, see <http://www.gnu.org/licenses/>.
+  -->
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_margin="10dp"
+    android:focusable="true"
+    android:background="#000000">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:background="#00000000">
+
+        <RelativeLayout
+            android:id="@+id/layout_avatar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/img_media_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:focusable="false"
+                android:scaleType="fitXY"
+                android:src="@drawable/thumb_maxresdefault" />
+
+            <TextView
+                android:id="@+id/txt_media_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:paddingStart="3dp"
+                android:paddingEnd="3dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="00:00:00"
+                android:textColor="#ffffff"
+                android:background="#111111"
+                android:textSize="12dp"
+                android:focusable="false"/>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_media_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="22dp"
+        android:layout_margin="5dp"
+        android:text="[VCS MÙA XUÂN 2020] NHẬN ĐỊNH ĐỘI HÌNH GAM ESPORTS: DIA1 và PALETTE SẼ TỎA SÁNG? NHẬN ĐỊNH ĐỘI HÌNH GAM ESPORTS: DIA1 và PALETTE SẼ TỎA SÁNG?"
+        android:maxLines="2"
+        android:textColor="@drawable/selector_item_color"
+        android:focusable="false"/>
+
+    <TextView
+        android:id="@+id/txt_media_channel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:text="Cafe Liên Minh"
+        android:maxLines="1"
+        android:textColor="@drawable/selector_subitem_color"
+        android:focusable="false"/>
+
+    <TextView
+        android:id="@+id/txt_media_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="15dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginEnd="5dp"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="5dp"
+        android:text="142.355 lượt xem • Đã công chiếu vào 6 thg 1, 2020"
+        android:maxLines="1"
+        android:textColor="@drawable/selector_subitem_color"
+        android:focusable="false"/>
+
+</LinearLayout>
