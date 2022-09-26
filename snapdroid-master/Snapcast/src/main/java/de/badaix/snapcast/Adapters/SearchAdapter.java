@@ -19,12 +19,17 @@
 package de.badaix.snapcast.Adapters;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import de.badaix.snapcast.Listeners.ItemListListenner;
 import de.badaix.snapcast.Models.MediaModel;
@@ -37,6 +42,38 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     private ItemListListenner mListener;
     private boolean isForcused = false;
     private int contextType = 0;
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        final View view = LayoutInflater.from(this.context).inflate(R.layout.layout_media_item, parent, false);
+        return new ViewHolder(view);
+
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+
+        holder.textName.setText(elements.get(position).getName());
+        holder.textInfo.setText(elements.get(position).getChannel_name() + " • " + elements.get(position).getViews().replace("lượt xem", ""));
+
+
+        Picasso.with(context)
+                .load(elements.get(position).getVideoLogo().replace("hqdefault", "mqdefault"))
+                .placeholder(R.drawable.thumb_maxresdefault)
+                .into(holder.imgThumbnail);
+
+
+        Picasso.with(context)
+                .load(elements.get(position).getVideoLogo())
+                .into(holder.imgThumbnail);
+
+    }
+
+    @Override
+    public int getItemCount() {
+        return this.elements.size();
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
 
