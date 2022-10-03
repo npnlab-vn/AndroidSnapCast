@@ -6,7 +6,7 @@ android {
     defaultConfig {
         applicationId "de.badaix.snapcast"
         minSdkVersion 17
-        targetSdkVersion 32
+        targetSdkVersion 31
         versionCode 2600
         versionName '0.26.0.0'
         multiDexEnabled true

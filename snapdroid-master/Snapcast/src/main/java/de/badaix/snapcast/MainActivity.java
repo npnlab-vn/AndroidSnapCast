@@ -38,6 +38,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -57,8 +58,15 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import androidx.leanback.widget.VerticalGridView;
+import de.badaix.snapcast.Adapters.SearchAdapter;
+import de.badaix.snapcast.Listeners.ItemListListenner;
+import de.badaix.snapcast.MVVM.MV.ISearchView;
+import de.badaix.snapcast.MVVM.VM.SearchViewModel;
+import de.badaix.snapcast.Models.MediaModel;
 import de.badaix.snapcast.control.RemoteControl;
 import de.badaix.snapcast.control.json.Client;
 import de.badaix.snapcast.control.json.Group;
@@ -76,8 +84,12 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-public class MainActivity extends AppCompatActivity implements GroupItem.GroupItemListener, RemoteControl.RemoteControlListener, SnapclientService.SnapclientListener, NsdHelper.NsdHelperListener {
 
+
+public class MainActivity extends AppCompatActivity implements GroupItem.GroupItemListener, RemoteControl.RemoteControlListener, SnapclientService.SnapclientListener, NsdHelper.NsdHelperListener,
+        ISearchView {
+
+    private AudioManager audio;
     static final int CLIENT_PROPERTIES_REQUEST = 1;
     static final int GROUP_PROPERTIES_REQUEST = 2;
     private static final String TAG = "Main";
@@ -98,12 +110,19 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
     private int nativeSampleRate = 0;
     private CoordinatorLayout coordinatorLayout;
     private Button btnConnect = null;
-    private Button btnPlay = null;
-    private Button btnPause = null;
+    private ImageButton btnPlay = null;
+    private ImageButton btnPause = null;
     private Button btnNext = null, btnPrevious = null;
-    private Button btnVoice = null;
+    private ImageButton btnVoice = null;
+
+    private ImageButton btnVTV1, btnVTV2, btnVTV3, btnVOH;
+
     private boolean batchActive = false;
     private MQTTHelper mqttHelper;
+
+
+
+    SearchViewModel mSearchModel;
 
     /**
      * Defines callbacks for service binding, passed to bindService()
@@ -162,6 +181,29 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
                 "\t} \n" +
                 "}";
 
+        jsonTemplate = "{\n" +
+                "    \"name\": \"app.vs.device.state.multiroom.stream.control\",\n" +
+                "    \"scope\": \"device\",\n" +
+                "    \"source\": \"panel_app\",\n" +
+                "    \"home_id\": \"home-123456\",\n" +
+                "    \"user_id\": \"admin@home.com\",\n" +
+                "    \"id\": \"panel_setting_001\",\n" +
+                "    \"auth_token\": \"\",\n" +
+                "    \"parent_id\": \"\",\n" +
+                "    \"client_id\": \"\",\n" +
+                "    \"created_time\": 1651135366214,\n" +
+                "    \"data\": {\n" +
+                "      \"command\": \"stream\",\n" +
+                "      \"media\": [\n" +
+                "        {\n" +
+                "          \"type\": \"youtube\",\n" +
+                "          \"url\": \"xxxx\",\n" +
+                "          \"info\": \"\"\n" +
+                "        }"+
+                "      ]\n" +
+                "    }\n" +
+                "}";
+
         jsonTemplate = jsonTemplate.replace("xxxx", data);
         //jsonTemplate = "abc123";
         MqttMessage msg = new MqttMessage();
@@ -190,6 +232,21 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
                 "\t\t\"command\": \"VOICEXXXX\"\n" +
                 "\t}\n" +
                 "}\n";
+        jsonTemplate ="{\n" +
+                "  \"name\": \"app.vs.device.state.command\",\n" +
+                "  \"scope\": \"device\",\n" +
+                "  \"source\": \"panel_app\",\n" +
+                "  \"home_id\": \"home-123456\",\n" +
+                "  \"user_id\": \"admin@home.com\",\n" +
+                "  \"id\": \"panel_setting_001\",\n" +
+                "  \"auth_token\": \"\",\n" +
+                "  \"parent_id\": \"\",\n" +
+                "  \"client_id\": \"\",\n" +
+                "  \"created_time\": 1651135366214,\n" +
+                "  \"data\": {\n" +
+                "    \"command_text\": \"VOICEXXXX\"\n" +
+                "  }\n" +
+                "}";
         jsonTemplate = jsonTemplate.replace("VOICEXXXX", cmd);
         MqttMessage msg = new MqttMessage();
         msg.setId(1234);
@@ -207,10 +264,26 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
 
         }
     }
+
     private void sendCMD(String cmd){
         String jsonTemplate = "{\n" +
                 "\t\"scope\": \"device\", \n" +
                 "    \t\"name\": \"app.ts.service.multiroom.youtube.CMDXXX\"\n" +
+                "}";
+        jsonTemplate = "{\n" +
+                "  \"name\": \"app.vs.device.state.multiroom.stream.control\",\n" +
+                "  \"scope\": \"device\",\n" +
+                "  \"source\": \"panel_app\",\n" +
+                "  \"home_id\": \"home-123456\",\n" +
+                "  \"user_id\": \"admin@home.com\",\n" +
+                "  \"id\": \"panel_setting_001\",\n" +
+                "  \"auth_token\": \"\",\n" +
+                "  \"parent_id\": \"\",\n" +
+                "  \"client_id\": \"\",\n" +
+                "  \"created_time\": 1651135366214,\n" +
+                "  \"data\": {\n" +
+                "    \"command\": \"CMDXXX\"\n" +
+                "  }\n" +
                 "}";
 
         jsonTemplate = jsonTemplate.replace("CMDXXX", cmd);
@@ -230,9 +303,15 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
 
         }
     }
+
     private static final int REQ_CODE_SPEECH_INPUT = 100;
+    int currentVolume = 0;
     private void startVoiceInput() {
 
+        currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        Log.d(TAG, "Save current Volume:" + currentVolume);
+        audio.setStreamVolume(AudioManager.STREAM_MUSIC,
+                2, 0);
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
@@ -283,18 +362,32 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
             }
         });
 
-        btnPlay = (Button) findViewById(R.id.btnPlay);
+        btnPlay =  findViewById(R.id.btnPlay);
         btnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendCMD("resume");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnPlay.setVisibility(View.GONE);
+                        btnPause.setVisibility(View.VISIBLE);
+                    }
+                });
             }
         });
-        btnPause = (Button) findViewById(R.id.btnPause);
+        btnPause =  findViewById(R.id.btnPause);
         btnPause.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 sendCMD("pause");
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnPlay.setVisibility(View.VISIBLE);
+                        btnPause.setVisibility(View.GONE);
+                    }
+                });
             }
         });
 
@@ -327,10 +420,99 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
         groupListFragment = (GroupListFragment) getSupportFragmentManager().findFragmentById(R.id.groupListFragment);
         groupListFragment.setHideOffline(Settings.getInstance(this).getBoolean("hide_offline", false));
 
+
         setActionbarSubtitle("Host: no Snapserver found");
         serverStatus = new ServerStatus();
 
+
+        mSearchModel = new SearchViewModel();
+        mSearchModel.attach(this, this);
+        gridViewSearch = findViewById(R.id.gridViewVideos);
         startMQTT();
+        audio = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        Log.d(TAG, "Current Volumne:  " + audio.getStreamVolume(AudioManager.STREAM_MUSIC));
+        Log.d(TAG, "MAX Volumne:  " + audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC));
+
+        btnVTV1 = findViewById(R.id.btnVTV1);
+        btnVTV1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendLiveStream("https://livecdn.fptplay.net/hda1/vtv1hd_hls.smil/playlist.m3u8");
+            }
+        });
+
+        btnVTV2 = findViewById(R.id.btnVTV2);
+        btnVTV2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendLiveStream("https://livecdn.fptplay.net/hda1/vtv2_hls.smil/playlist.m3u8");
+            }
+        });
+
+        btnVTV3 = findViewById(R.id.btnVTV3);
+        btnVTV3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendLiveStream("https://livecdn.fptplay.net/hda1/vtv3hd_hls.smil/playlist.m3u8");
+            }
+        });
+        btnVOH = findViewById(R.id.btnVOH);
+        btnVOH.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendLiveStream("https://strm.voh.com.vn/live/channel5/chunklist_w1769634646.m3u8");
+            }
+        });
+
+    }
+
+    private void sendLiveStream(String uri){
+        String jsonTemplate = "{\n" +
+                "    \"name\": \"app.vs.device.state.multiroom.stream.control\",\n" +
+                "    \"scope\": \"device\",\n" +
+                "    \"source\": \"panel_app\",\n" +
+                "    \"home_id\": \"home-123456\",\n" +
+                "    \"user_id\": \"admin@home.com\",\n" +
+                "    \"id\": \"panel_setting_001\",\n" +
+                "    \"auth_token\": \"\",\n" +
+                "    \"parent_id\": \"\",\n" +
+                "    \"client_id\": \"\",\n" +
+                "    \"created_time\": 1651135366214,\n" +
+                "    \"data\": {\n" +
+                "      \"command\": \"stream\",\n" +
+                "      \"media\": [\n" +
+                "        {\n" +
+                "          \"type\": \"radio\",\n" +
+                "          \"url\": \"LIVEURI\",\n" +
+                "          \"info\": \"livestream\"\n" +
+                "        }\n" +
+                "      ]\n" +
+                "    }\n" +
+                "}";
+
+        jsonTemplate = jsonTemplate.replace("LIVEURI", uri);
+        MqttMessage msg = new MqttMessage();
+        msg.setId(1234);
+        msg.setQos(0);
+        msg.setRetained(false);
+        Log.d(TAG, jsonTemplate);
+
+        byte[] b = jsonTemplate.getBytes(Charset.forName("UTF-8"));
+        msg.setPayload(b);
+
+        try {
+            mqttHelper.mqttAndroidClient.publish("/novaland/smartspeakerdemo/smartspeaker_demo_1", msg);
+
+        }catch (MqttException e){
+
+        }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                btnPause.setVisibility(View.GONE);
+                btnPlay.setVisibility(View.GONE);
+            }
+        });
     }
 
     @Override
@@ -557,7 +739,10 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
         updateStartStopMenuItem();
     }
 
+    public void searchByKeyword(String keyword){
+        mSearchModel.requestSearchByKeyword(keyword, null);
 
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -570,7 +755,15 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
                     if (result.size() > 0) {
                         String cmd_voice = result.get(0).toLowerCase();
                         Log.d(TAG, "Input voice: " + cmd_voice);
-                        sendVoiceCommand(cmd_voice);
+                        if(cmd_voice.contains("bật") || cmd_voice.contains("mở")
+                          || cmd_voice.contains("đèn") || cmd_voice.contains("rèm")){
+                            sendVoiceCommand(cmd_voice);
+                        }else {
+                            searchByKeyword(cmd_voice);
+                        }
+                        audio.setStreamVolume(AudioManager.STREAM_MUSIC,
+                                currentVolume, 0);
+                        Log.d(TAG, "Set current volume: " + currentVolume);
                     }
                 }
             }
@@ -957,5 +1150,26 @@ public class MainActivity extends AppCompatActivity implements GroupItem.GroupIt
                 }
             }
         });
+    }
+
+    SearchAdapter adapter;
+    VerticalGridView gridViewSearch;
+    @Override
+    public void onResponseSearchByKeyWord(List<MediaModel> aList) {
+        Log.d("YTSEARCH", "Number of Results: " + aList.size());
+        adapter = new SearchAdapter(this, aList, new ItemListListenner() {
+            @Override
+            public void onItemClicked(MediaModel aMedia, int keyCode) {
+                Log.d("YTSEARCH", aMedia.getVideoId());
+                sendMQTTData("https://www.youtube.com/watch?v=" + aMedia.getVideoId());
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnPause.setVisibility(View.VISIBLE);
+                    }
+                });
+            }
+        });
+        gridViewSearch.setAdapter(adapter);
     }
 }

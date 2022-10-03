@@ -43,6 +43,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
     private boolean isForcused = false;
     private int contextType = 0;
 
+    public SearchAdapter(Context context, List<MediaModel> list, ItemListListenner listener) {
+        this.context = context;
+        this.elements = list;
+        this.mListener = listener;
+        this.contextType = 0;
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -67,6 +74,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.ViewHolder
         Picasso.with(context)
                 .load(elements.get(position).getVideoLogo())
                 .into(holder.imgThumbnail);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.onItemClicked(elements.get(position), 84);
+            }
+        });
 
     }
 

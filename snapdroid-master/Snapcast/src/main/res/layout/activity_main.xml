@@ -55,9 +55,10 @@
             android:name="de.badaix.snapcast.GroupListFragment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.3"
+            android:layout_weight="0"
             android:layout_marginTop="?attr/actionBarSize"
             tools:layout="@layout/fragment_group_list" />
+
         <androidx.leanback.widget.VerticalGridView
             android:id="@+id/gridViewVideos"
             android:layout_width="match_parent"
@@ -66,6 +67,7 @@
 
         </androidx.leanback.widget.VerticalGridView>
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.3"
@@ -77,18 +79,7 @@
                 android:layout_height="wrap_content"
 
                 android:text="@string/connect" />
-            <Button
-                android:id="@+id/btnPlay"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
 
-                android:text="Play" />
-
-            <Button
-                android:id="@+id/btnPause"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Pause" />
             <Button
                 android:id="@+id/btnNext"
                 android:layout_width="wrap_content"
@@ -101,16 +92,83 @@
 
                 android:text="PREVIOUS" />
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="0.1">
-            <Button
+            android:layout_height="wrap_content"
+
+            android:gravity="center_horizontal|bottom"
+            android:layout_marginBottom="10dp">
+
+            <ImageButton
+                android:layout_margin="10dp"
+                android:id="@+id/btnVTV1"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="30dp"
+                android:src="@drawable/vtv1"
+                android:scaleType="fitXY"
+                android:background="#00000000"/>
+            <ImageButton
+                android:layout_margin="10dp"
+                android:id="@+id/btnVTV2"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="30dp"
+                android:src="@drawable/vtv2"
+                android:scaleType="fitXY"
+                android:background="#00000000"/>
+
+            <ImageButton
+                android:layout_margin="10dp"
+                android:id="@+id/btnVTV3"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="30dp"
+                android:src="@drawable/vtv3"
+                android:scaleType="fitXY"
+                android:background="#00000000"/>
+            <ImageButton
+                android:layout_margin="10dp"
+                android:id="@+id/btnVOH"
+                android:layout_width="0dp"
+                android:layout_weight="0.2"
+                android:layout_height="30dp"
+                android:src="@drawable/voh"
+                android:scaleType="fitXY"
+                android:background="#00000000"/>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:gravity="center_horizontal|bottom">
+
+            <ImageButton
                 android:id="@+id/btnVoice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:src="@drawable/ic_mic"
+                android:background="#00000000"/>
 
-                android:text="Voice" />
+            <ImageButton
+                android:visibility="gone"
+                android:id="@+id/btnPlay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_play"
+                android:background="#00000000"/>
+
+            <ImageButton
+                android:visibility="gone"
+                android:id="@+id/btnPause"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_pause"
+                android:background="#00000000"/>
+
         </LinearLayout>
     </LinearLayout>
 
